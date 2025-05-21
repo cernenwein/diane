@@ -3,7 +3,7 @@ set -e
 
 echo "=== STEP 1: Update system and install base packages ==="
 sudo apt update && sudo apt upgrade -y
-sudo apt install -y build-essential cmake git wget unzip python3 python3-pip libsndfile1-dev ffmpeg aplay
+sudo apt install -y build-essential cmake git wget unzip python3 python3-pip libsndfile1-dev ffmpeg 
 
 echo "=== STEP 2: Create 4GB swap file ==="
 sudo fallocate -l 4G /swapfile
