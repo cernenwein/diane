@@ -30,10 +30,10 @@ mkdir -p ~/.diane
 
 echo "[Setting up swap file (optional)]"
 # sudo fallocate -l 4G /swapfile
-sudo chmod 600 /swapfile
-sudo mkswap /swapfile
-sudo swapon /swapfile
-echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+# sudo chmod 600 /swapfile
+# sudo mkswap /swapfile
+# sudo swapon /swapfile
+# echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 
 echo "[Downloading and installing log2ram]"
 sudo apt install -y git
