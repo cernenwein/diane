@@ -6,7 +6,8 @@ sudo apt update && sudo apt install -y \
   git curl unzip sox ffmpeg libportaudio2 \
   build-essential cmake g++ pkg-config libopenblas-dev \
   liblapack-dev  libffi-dev \
-  libssl-dev libmp3lame0
+  libssl-dev libmp3lame0  portaudio19-dev 
+
 
   # libsoundfile-dev
 
@@ -28,7 +29,7 @@ mkdir -p ~/diane_personality_profiles
 mkdir -p ~/.diane
 
 echo "[Setting up swap file (optional)]"
-sudo fallocate -l 4G /swapfile
+# sudo fallocate -l 4G /swapfile
 sudo chmod 600 /swapfile
 sudo mkswap /swapfile
 sudo swapon /swapfile
