@@ -5,8 +5,10 @@ sudo apt update && sudo apt install -y \
   python3 python3-pip python3-venv \
   git curl unzip sox ffmpeg libportaudio2 \
   build-essential cmake g++ pkg-config libopenblas-dev \
-  liblapack-dev libsoundfile-dev libffi-dev \
+  liblapack-dev  libffi-dev \
   libssl-dev libmp3lame0
+
+  # libsoundfile-dev
 
 echo "[Creating Python virtual environment for Diane]"
 python3 -m venv ~/diane_venv
