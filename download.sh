@@ -1,4 +1,8 @@
 #!/bin/bash
+
+set -x 
+
+
 MODEL_ID="DavidAU/L3.2-Rogue-Creative-Instruct-Uncensored-Abliterated-7B-GGUF"
 MODEL_FILENAME="L3.2-Rogue-Creative-Instruct-Uncensored-Abliterated-7B.Q4_K_M.gguf"
 TOKEN_FILE="$HOME/.huggingface/token"
@@ -15,7 +19,7 @@ fi
 TOKEN=$(cat "$TOKEN_FILE")
 
 echo "Downloading $MODEL_FILENAME from $MODEL_ID..."
-curl -L -H "Authorization: Bearer $TOKEN" \
+curl -v -L -H "Authorization: Bearer $TOKEN" \
      -o "$MODEL_DIR/$MODEL_FILENAME" \
      "https://huggingface.co/$MODEL_ID/resolve/main/$MODEL_FILENAME"
 
