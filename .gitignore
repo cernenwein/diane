@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+
+# Virtual environments
+venv/
+.env/
+
+# Editor files
+*.swp
+*.swo
+
+# OS junk
+Thumbs.db
+
+# Diane-specific
+output/
+*.wav
