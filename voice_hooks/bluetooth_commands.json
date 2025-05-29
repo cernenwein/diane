@@ -1,0 +1,4 @@
+{
+  "pair my JLab earbuds": "/home/pi/diane/install/bluetooth/pair_device.sh",
+  "reconnect my earbuds": "/home/pi/diane/install/bluetooth/auto_connect.sh"
+}

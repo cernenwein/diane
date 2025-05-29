@@ -1,10 +1,10 @@
 [Unit]
-Description=Auto-connect JLab GO Air Sport Bluetooth on boot
+Description=Auto-connect JLab GO Air Sport on boot
 After=bluetooth.target
 Requires=bluetooth.service
 
 [Service]
-ExecStart=/home/pi/bluetooth/auto_connect.sh
+ExecStart=/home/pi/diane/install/bluetooth/auto_connect.sh
 Type=oneshot
 RemainAfterExit=true
 
