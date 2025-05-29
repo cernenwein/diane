@@ -1,0 +1,12 @@
+[Unit]
+Description=Auto-connect JLab GO Air Sport Bluetooth on boot
+After=bluetooth.target
+Requires=bluetooth.service
+
+[Service]
+ExecStart=/home/pi/bluetooth/auto_connect.sh
+Type=oneshot
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target
