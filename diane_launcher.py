@@ -24,7 +24,7 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
-logging.info("Starting Diane voice_llama_chat.py")
+logging.info("Starting Diane diane_launcher.py")
 
 # Placeholder for TTS with Piper
 def speak_text(text):
