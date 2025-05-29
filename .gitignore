@@ -21,6 +21,6 @@ Thumbs.db
 
 # Diane-specific
 output/
-*.wav
 wifi_credentials.json
 
+*.zip
