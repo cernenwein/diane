@@ -1,0 +1,24 @@
+{
+  "projects": [
+    {
+      "name": "Watchtower Wayfarer",
+      "weight": 9,
+      "milestones": [
+        {
+          "name": "Electrical install",
+          "due": "2025-06-15"
+        }
+      ]
+    },
+    {
+      "name": "Diane AI Voice Assistant",
+      "weight": 10,
+      "milestones": [
+        {
+          "name": "Bluetooth headset integration",
+          "due": "2025-06-01"
+        }
+      ]
+    }
+  ]
+}
