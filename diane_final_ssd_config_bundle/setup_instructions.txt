@@ -1,0 +1,15 @@
+To finalize Diane's SSD + config setup:
+
+1. Copy all files from this bundle to: /opt/diane/config/
+   Example:
+     sudo mkdir -p /opt/diane/config/
+     sudo cp memory_notes.txt projects.json slang_mode.json /opt/diane/config/
+
+2. Move the mount script to a system path and register for boot:
+     sudo cp mount_ssd.sh /usr/local/bin/
+     sudo chmod +x /usr/local/bin/mount_ssd.sh
+
+3. Add to crontab for auto-mount:
+     sudo crontab -e
+   Add this line at the end:
+     @reboot /usr/local/bin/mount_ssd.sh
