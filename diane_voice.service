@@ -1,0 +1,15 @@
+[Unit]
+Description=Diane Voice Launcher
+After=network.target sound.target
+
+[Service]
+Type=simple
+ExecStart=/bin/bash -c 'source /home/diane/diane_venv/bin/activate && python3 /home/diane/voice_llama_chat.py'
+User=diane
+WorkingDirectory=/home/diane
+StandardOutput=append:/var/log/diane_voice.log
+StandardError=append:/var/log/diane_voice.log
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
