@@ -1,0 +1,11 @@
+#!/bin/bash
+LOG="/opt/diane/diane_logs/bluetooth_audio.log"
+echo "🔊 Available audio sinks:" | tee "$LOG"
+pactl list short sinks | tee -a "$LOG"
+echo "" | tee -a "$LOG"
+echo "🎙️ Available audio sources:" | tee -a "$LOG"
+pactl list short sources | tee -a "$LOG"
+echo "" | tee -a "$LOG"
+echo "💡 Use the following commands to set default:" | tee -a "$LOG"
+echo "pactl set-default-sink <name>" | tee -a "$LOG"
+echo "pactl set-default-source <name>" | tee -a "$LOG"
