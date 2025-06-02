@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
 
 import os
-import time
-import sounddevice as sd
-import soundfile as sf
+import pvporcupine
+import pyaudio
+import struct
 import subprocess
-import speech_recognition as sr
 
 WAKE_WORD = "diane"
-AUDIO_OUTPUT_PATH = "/tmp/diane_output.wav"
-AUDIO_INPUT_PATH = "/tmp/diane_input.wav"
 PIPER_VOICE = "/home/diane/piper/en_US-lessac-medium.onnx"
 PIPER_COMMAND = "/usr/local/bin/piper"
+AUDIO_OUTPUT_PATH = "/tmp/diane_output.wav"
 
 def play_response_audio():
     if os.path.exists(AUDIO_OUTPUT_PATH):
@@ -19,62 +17,39 @@ def play_response_audio():
     else:
         print("⚠️ Warning: No output audio to play (missing /tmp/diane_output.wav)")
 
-def record_audio(duration=5):
-    print("🎙️ Listening...")
-    samplerate = 16000
-    channels = 1
-    recording = sd.rec(int(samplerate * duration), samplerate=samplerate, channels=channels, dtype='int16')
-    sd.wait()
-    sf.write(AUDIO_INPUT_PATH, recording, samplerate)
-    print("✅ Recorded.")
-
-def transcribe_audio():
-    recognizer = sr.Recognizer()
-    with sr.AudioFile(AUDIO_INPUT_PATH) as source:
-        audio = recognizer.record(source)
-    try:
-        return recognizer.recognize_google(audio)
-    except sr.UnknownValueError:
-        return ""
-    except sr.RequestError as e:
-        print(f"❌ Speech Recognition error: {e}")
-        return ""
-
-def generate_response(text):
-    # Simple placeholder response generator
-    return f"You said: {text}"
-
-def synthesize_speech(response_text):
-    print(f"🗣️ Diane says: {response_text}")
+def synthesize_speech(text):
+    print(f"🗣️ Diane says: {text}")
     try:
         subprocess.run([PIPER_COMMAND, "--model", PIPER_VOICE, "--output_file", AUDIO_OUTPUT_PATH],
-                       input=response_text.encode(), check=True)
+                       input=text.encode(), check=True)
     except Exception as e:
         print(f"❌ Piper synthesis error: {e}")
 
 def main():
-    print("[Diane says]: I am Diane, online and listening.")
-    while True:
-        try:
-            print("👂 Listening for wake word...")
-            record_audio(duration=3)
-            text = transcribe_audio().lower()
-            if WAKE_WORD in text:
+    print("🎤 Diane is running with Porcupine wake word detection...")
+    porcupine = pvporcupine.create(keywords=[WAKE_WORD])
+
+    pa = pyaudio.PyAudio()
+    stream = pa.open(rate=porcupine.sample_rate, channels=1, format=pyaudio.paInt16,
+                     input=True, frames_per_buffer=porcupine.frame_length)
+
+    try:
+        while True:
+            pcm = stream.read(porcupine.frame_length, exception_on_overflow=False)
+            pcm_unpacked = struct.unpack_from("h" * porcupine.frame_length, pcm)
+
+            keyword_index = porcupine.process(pcm_unpacked)
+            if keyword_index >= 0:
                 print(f"🎉 Wake word '{WAKE_WORD}' detected!")
-                record_audio(duration=5)
-                spoken = transcribe_audio()
-                print(f"📥 Heard: {spoken}")
-                response = generate_response(spoken)
-                synthesize_speech(response)
+                synthesize_speech("Yes, I’m listening.")
                 play_response_audio()
-            else:
-                print("⏸️ Wake word not detected.")
-        except KeyboardInterrupt:
-            print("🛑 Diane session ended.")
-            break
-        except Exception as e:
-            print(f"⚠️ Unhandled error: {e}")
-            time.sleep(1)
+    except KeyboardInterrupt:
+        print("🛑 Stopped.")
+    finally:
+        stream.stop_stream()
+        stream.close()
+        pa.terminate()
+        porcupine.delete()
 
 if __name__ == "__main__":
     main()

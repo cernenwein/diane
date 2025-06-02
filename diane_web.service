@@ -1,0 +1,14 @@
+[Unit]
+Description=Diane Web Interface
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /opt/diane/XX_setup_diane_web_ui.py
+WorkingDirectory=/opt/diane
+StandardOutput=journal
+StandardError=journal
+Restart=always
+User=diane
+
+[Install]
+WantedBy=multi-user.target
