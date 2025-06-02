@@ -70,8 +70,7 @@ def main():
             else:
                 print("⏸️ Wake word not detected.")
         except KeyboardInterrupt:
-            print("
-🛑 Diane session ended.")
+            print("🛑 Diane session ended.")
             break
         except Exception as e:
             print(f"⚠️ Unhandled error: {e}")
