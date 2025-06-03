@@ -101,8 +101,7 @@ def execute_command(command):
 
 def log_event(event):
     with open("/opt/diane/diane_logs/diane_event_log.txt", "a") as f:
-        f.write(f"{datetime.now().isoformat()} - {event}
-")
+        f.write(f"{datetime.now().isoformat()} - {event}")
 
 def report_system_status():
     import psutil
