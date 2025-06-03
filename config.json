@@ -1,5 +1,0 @@
-{
-  "wake_words": ["diane", "hey diane", "yo diane"],
-  "sensitivity": 0.55,
-  "use_vad": true
-}
