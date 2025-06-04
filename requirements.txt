@@ -1,0 +1,8 @@
+pvporcupine
+pyaudio
+webrtcvad
+numpy
+sounddevice
+openai-whisper
+llama-cpp-python
+piper-tts
