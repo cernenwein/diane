@@ -22,6 +22,9 @@ Other features:
   - TTS synthesis using Piper
   - Audio playback using sounddevice
   - Built‐in commands: self-update, Wi-Fi connect/disconnect, Bluetooth trust, slang modes, ExpressVPN
+Diane voice assistant with automatic Wi-Fi reconnection and SSD‐based temp storage:
+  - Temporary files (Whisper model cache, intermediate WAV files) use /mnt/ssd/tmp or /mnt/ssd/whisper_cache.
+  - Approved networks list contains SSID and password pairs.
 """
 
 import os
@@ -56,8 +59,21 @@ DEFAULT_SYNONYMS_JSON = os.getenv("SYNONYMS_PATH", "/mnt/ssd/voice_config/synony
 DEFAULT_BLUETOOTH_TRUSTED = "/home/diane/diane/bluetooth_trusted_devices.txt"
 APPROVED_NETWORKS_FILE = "/mnt/ssd/voice_config/approved_networks.txt"
 
+# Directories on SSD for temporary and cache files
+SSD_TMP_DIR = "/mnt/ssd/tmp"
+WHISPER_CACHE_DIR = "/mnt/ssd/whisper_cache"
+
 AUDIO_SAMPLE_RATE = 16000
 VAD_FRAME_DURATION = 30  # ms for webrtcvad
+
+# ------------------------------------------------------------------------------------
+# Ensure SSD temp/cache directories exist
+# ------------------------------------------------------------------------------------
+os.makedirs(SSD_TMP_DIR, exist_ok=True)
+os.makedirs(WHISPER_CACHE_DIR, exist_ok=True)
+
+# Redirect cache environment variables for Whisper/HuggingFace
+os.environ["XDG_CACHE_HOME"] = WHISPER_CACHE_DIR
 
 # ------------------------------------------------------------------------------------
 # Helper: verify file exists
@@ -131,7 +147,7 @@ def wifi_reconnector():
         time.sleep(30)
 
 # ------------------------------------------------------------------------------------
-# Voice-command handlers (unchanged)
+# Voice-command handlers
 # ------------------------------------------------------------------------------------
 def handle_self_update():
     logging.info("Running self-update: git pull and restart service...")
@@ -263,6 +279,7 @@ class WakeWordDetector:
             input=True, frames_per_buffer=self.porcupine.frame_length,
             input_device_index=audio_device_index
         )
+
     def listen(self):
         logging.info("Waiting for wake word...")
         while True:
@@ -272,6 +289,7 @@ class WakeWordDetector:
             if result >= 0:
                 logging.info("Wake word detected!")
                 return
+
     def close(self):
         self.stream.stop_stream()
         self.stream.close()
@@ -283,14 +301,16 @@ class WakeWordDetector:
 # ------------------------------------------------------------------------------------
 def record_until_silence(vad, audio_device_index=None):
     pa = pyaudio.PyAudio()
+    sdk = AUDIO_SAMPLE_RATE
+    frame_bytes = int(AUDIO_SAMPLE_RATE * (VAD_FRAME_DURATION / 1000)) 
     stream = pa.open(format=pyaudio.paInt16, channels=1, rate=AUDIO_SAMPLE_RATE,
-                     input=True, frames_per_buffer=int(AUDIO_SAMPLE_RATE * (VAD_FRAME_DURATION / 1000)),
+                     input=True, frames_per_buffer=frame_bytes,
                      input_device_index=audio_device_index)
     speech_frames = []
     silence_count = 0
     triggered = False
     while True:
-        frame = stream.read(int(AUDIO_SAMPLE_RATE * (VAD_FRAME_DURATION / 1000)), exception_on_overflow=False)
+        frame = stream.read(frame_bytes, exception_on_overflow=False)
         is_speech = vad.is_speech(frame, AUDIO_SAMPLE_RATE)
         if is_speech:
             speech_frames.append(frame)
@@ -307,14 +327,15 @@ def record_until_silence(vad, audio_device_index=None):
     return b"".join(speech_frames)
 
 # ------------------------------------------------------------------------------------
-# Transcription using Whisper
+# Transcription using Whisper (caches on SSD)
 # ------------------------------------------------------------------------------------
 def transcribe_audio(raw_audio_bytes):
-    tmp_wav = "/tmp/diane_input.wav"
+    tmp_wav = os.path.join(SSD_TMP_DIR, "diane_input.wav")
     wf = wave.open(tmp_wav, 'wb')
     wf.setnchannels(1); wf.setsampwidth(2); wf.setframerate(AUDIO_SAMPLE_RATE)
     wf.writeframes(raw_audio_bytes); wf.close()
-    model = whisper.load_model("base", device="cpu")
+
+    model = whisper.load_model("base", device="cpu", download_root=WHISPER_CACHE_DIR)
     result = model.transcribe(tmp_wav)
     return result["text"].strip()
 
