@@ -4,3 +4,27 @@
 → Starting cleanup at 2025-06-04 08:26:47
   • Backup folder already exists: /c/Users/a7813/OneDrive/Documents/GitHub/diane/scripts/backup
   • Scanning for legacy scripts to move…
+→ Starting cleanup at 2025-06-04 08:29:24
+  • Backup folder already exists: /c/Users/a7813/OneDrive/Documents/GitHub/diane/scripts/backup
+  • Scanning for legacy scripts to move…
+    ✔ Moved: 01_setup_diane_system.sh → backup/01_setup_diane_system.sh
+    ✔ Moved: 02_setup_diane_services.sh → backup/02_setup_diane_services.sh
+    ✔ Moved: 03_setup_diane_rag.sh → backup/03_setup_diane_rag.sh
+    ✔ Moved: 04_setup_diane_check.sh → backup/04_setup_diane_check.sh
+    ✔ Moved: XX_setup_diane_01_porcupine.sh → backup/XX_setup_diane_01_porcupine.sh
+    ✔ Moved: XX_setup_diane_99_import_trusted_bt_devices.sh → backup/XX_setup_diane_99_import_trusted_bt_devices.sh
+    ✔ Moved: bt_helper_01_check_status.sh → backup/bt_helper_01_check_status.sh
+    ✔ Moved: bt_helper_02_list_devices.sh → backup/bt_helper_02_list_devices.sh
+    ✔ Moved: bt_helper_03_connect_device.sh → backup/bt_helper_03_connect_device.sh
+    ✔ Moved: bt_helper_04_set_default_audio.sh → backup/bt_helper_04_set_default_audio.sh
+    ✔ Moved: cleanup_and_validate_repo.sh → backup/cleanup_and_validate_repo.sh
+    – Skipping cleanup script itself: cleanup_diane_scripts.sh
+    ✔ Moved: deploy_opt_assets.sh → backup/deploy_opt_assets.sh
+    ✔ Moved: github_config_push_updates.sh → backup/github_config_push_updates.sh
+    ✔ Moved: github_config_repo_cleanup.sh → backup/github_config_repo_cleanup.sh
+    ✔ Moved: github_config_sync_repo.sh → backup/github_config_sync_repo.sh
+    – Reserved script (setup_diane_ prefix): setup_diane_filestructure.sh
+    – Reserved script (setup_diane_ prefix): setup_diane_service.sh
+    ✔ Moved: setup_phase_1.sh → backup/setup_phase_1.sh
+    ✔ Moved: setup_phase_2.sh → backup/setup_phase_2.sh
+→ Cleanup complete. See /c/Users/a7813/OneDrive/Documents/GitHub/diane/scripts/cleanup.log for details.
