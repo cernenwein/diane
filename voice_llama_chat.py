@@ -2,26 +2,6 @@
 """
 voice_llama_chat.py
 
-Diane voice assistant with automatic Wi-Fi reconnection using SSID/password pairs:
-  - On startup and on connectivity loss, cycles through approved networks to connect.
-  - Approved networks list now includes SSID and password.
-
-Approved networks file format (one per line):
-  SSID,Password
-
-Example:
-  HomeNetwork,MyHomePass123
-  OfficeWiFi,OfficePass!
-  MobileHotspot,12345678
-  
-Other features:
-  - Wake‐word detection via Porcupine
-  - VAD using webrtcvad
-  - Transcription using OpenAI Whisper
-  - LLM inference using llama-cpp-python
-  - TTS synthesis using Piper
-  - Audio playback using sounddevice
-  - Built‐in commands: self-update, Wi-Fi connect/disconnect, Bluetooth trust, slang modes, ExpressVPN
 Diane voice assistant with automatic Wi-Fi reconnection and SSD‐based temp storage:
   - Temporary files (Whisper model cache, intermediate WAV files) use /mnt/ssd/tmp or /mnt/ssd/whisper_cache.
   - Approved networks list contains SSID and password pairs.
