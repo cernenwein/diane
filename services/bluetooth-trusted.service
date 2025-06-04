@@ -1,0 +1,12 @@
+[Unit]
+Description=Bluetooth Trusted Devices Auto-Trust
+After=bluetooth.service
+Wants=bluetooth.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c 'FILE="/home/diane/diane/bluetooth_trusted_devices.txt"; if [ -f "$FILE" ]; then   while IFS= read -r addr; do     [ -n "$addr" ] && echo "trust $addr" | bluetoothctl;   done < "$FILE"; fi'
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
