@@ -1,0 +1,25 @@
+[Unit]
+Description=Diane Voice Assistant
+After=network.target bluetooth.service
+
+[Service]
+Type=simple
+User=diane
+WorkingDirectory=/home/diane/diane
+EnvironmentFile=/home/diane/diane/.env
+ExecStart=/home/diane/diane/.venv/bin/python3 \
+          /home/diane/diane/voice_llama_chat.py \
+          --llm-model "/mnt/ssd/models/llm/ggml-diane-7b.bin" \
+          --tts-model "/mnt/ssd/models/tts/en_US-amy-medium.onnx" \
+          --hotword-model "/mnt/ssd/models/hotword/hotword.pt" \
+          --vad-model "/mnt/ssd/models/vad/vad.pt" \
+          --synonyms "/mnt/ssd/voice_config/synonyms.json" \
+          --wake-word "Diane" \
+          --audio-input "hw:1,0" \
+          --audio-output "hw:0,0" \
+          --log-level "INFO"
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

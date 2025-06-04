@@ -122,3 +122,21 @@ All commands support synonyms. New ones can be added live.
 - [ ] Load `Diane System` project memory and review current personality config
 - [ ] Check and buffer logs to RAM (`log2ram`)
 - [ ] Confirm voice command parsing and synonym tables are functional
+
+
+# INSTRUCTIONS.md
+
+These instructions assume you have already created a user called `diane` on your Raspberry Pi 5, and that you will run Diane under that account.  All paths are relative to `/home/diane/diane` unless otherwise noted.
+
+---
+
+## 1. Clone the Diane repository
+
+```bash
+# On your Ubuntu dev, you already have a `diane/` repo. Push commits to GitHub:
+git push origin main
+
+# On Diane (Raspberry Pi), SSH in and clone (if not already done):
+cd /home/diane
+git clone https://github.com/cernenwein/diane.git
+cd diane
