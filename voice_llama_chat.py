@@ -1,10 +1,17 @@
-#!/usr/bin/env python3
+#!/home/diane/diane/.venv/bin/python3
 """
 voice_llama_chat.py
 
-Diane voice assistant with automatic Wi-Fi reconnection and SSD‐based temp storage:
-  - Temporary files (Whisper model cache, intermediate WAV files) use /mnt/ssd/tmp or /mnt/ssd/whisper_cache.
-  - Approved networks list contains SSID and password pairs.
+Diane voice assistant with proper PiperVoice import (instead of piper_tts):
+  - Wake‐word detection via Porcupine
+  - VAD using webrtcvad
+  - Transcription using OpenAI Whisper
+  - LLM inference using llama-cpp-python
+  - TTS synthesis using PiperVoice from piper.voice
+  - Audio playback using sounddevice
+  - Built‐in commands: self-update, Wi-Fi connect/disconnect, Bluetooth trust, slang modes, ExpressVPN
+  - Wi-Fi auto reconnection with SSID/password pairs
+  - SSD-based temporary and cache storage for Whisper
 """
 
 import os
@@ -27,13 +34,13 @@ import sounddevice as sd
 
 import whisper
 from llama_cpp import Llama
-from piper_tts import PiperTTS
+from piper.voice import PiperVoice  # Correct import
 
 # ------------------------------------------------------------------------------------
 # Defaults and paths
 # ------------------------------------------------------------------------------------
 DEFAULT_LLM_PATH = os.getenv("LLM_MODEL_PATH", "/mnt/ssd/models/ggml-diane-7b.bin")
-DEFAULT_TTS_PATH = os.getenv("TTS_MODEL_PATH", "/mnt/ssd/models/tts/en_US-amy-medium.onnx")
+DEFAULT_TTS_MODEL_PATH = os.getenv("TTS_MODEL_PATH", "/mnt/ssd/models/tts/en_US-amy-medium.onnx")
 DEFAULT_HOTWORD_PATH = os.getenv("HOTWORD_MODEL_PATH", "/mnt/ssd/models/hotword/porcupine_diane.ppn")
 DEFAULT_SYNONYMS_JSON = os.getenv("SYNONYMS_PATH", "/mnt/ssd/voice_config/synonyms.json")
 DEFAULT_BLUETOOTH_TRUSTED = "/home/diane/diane/bluetooth_trusted_devices.txt"
@@ -62,8 +69,7 @@ def verify_file(path: str, description: str):
     if path and not os.path.isfile(path):
         logging.error(f"{description} not found at: {path}")
         sys.exit(1)
-    else:
-        logging.info(f"{description} found: {path}")
+    logging.info(f"{description} found: {path}")
 
 # ------------------------------------------------------------------------------------
 # Wi-Fi reconnection logic with SSID/password
@@ -139,7 +145,7 @@ def handle_self_update():
         logging.error(f"Self-update failed: {e}")
 
 def handle_wifi_connect(text: str):
-    match = re.search(r"connect wifi (\S+) (\S+)", text)
+    match = re.search(r"connect wifi (\\S+) (\\S+)", text)
     if match:
         ssid = match.group(1)
         password = match.group(2)
@@ -153,7 +159,7 @@ def handle_wifi_connect(text: str):
         logging.warning("Wi-Fi connect command not understood.")
 
 def handle_wifi_disconnect(text: str):
-    match = re.search(r"disconnect wifi (\S+)", text)
+    match = re.search(r"disconnect wifi (\\S+)", text)
     if match:
         ssid = match.group(1)
         logging.info(f"Disconnecting from Wi-Fi SSID: {ssid}")
@@ -175,10 +181,10 @@ def handle_add_trusted_bluetooth(text: str):
                 with open(DEFAULT_BLUETOOTH_TRUSTED, "r+") as f:
                     lines = [line.strip() for line in f if line.strip()]
                     if mac not in lines:
-                        f.write(mac + "\n")
+                        f.write(mac + "\\n")
             else:
                 with open(DEFAULT_BLUETOOTH_TRUSTED, "w") as f:
-                    f.write(mac + "\n")
+                    f.write(mac + "\\n")
             subprocess.run(["bash", "-c", f"echo 'trust {mac}' | bluetoothctl"], check=True)
             logging.info("Bluetooth device trusted immediately.")
             subprocess.run(["sudo", "systemctl", "restart", "bluetooth-trusted.service"], check=True)
@@ -188,7 +194,7 @@ def handle_add_trusted_bluetooth(text: str):
         logging.warning("Bluetooth trust command not understood.")
 
 def handle_slang_mode(text: str):
-    match = re.search(r"set slang mode (\w+)", text, re.IGNORECASE)
+    match = re.search(r"set slang mode (\\w+)", text, re.IGNORECASE)
     if match:
         mode = match.group(1).lower()
         slang_dir = "/mnt/ssd/voice_config/slang_modes"
@@ -208,7 +214,7 @@ def handle_slang_mode(text: str):
         logging.warning("Slang mode command not understood.")
 
 def handle_vpn_connect(text: str):
-    match = re.search(r"(?:connect vpn|vpn connect) (\S+)", text, re.IGNORECASE)
+    match = re.search(r"(?:connect vpn|vpn connect) (\\S+)", text, re.IGNORECASE)
     if match:
         location = match.group(1)
         logging.info(f"Connecting ExpressVPN to location: {location}")
@@ -237,7 +243,7 @@ def handle_vpn_disconnect(text: str):
 def parse_args():
     parser = argparse.ArgumentParser(description="Diane voice assistant")
     parser.add_argument("--llm-model", type=str, default=DEFAULT_LLM_PATH, help="Path to local LLM binary")
-    parser.add_argument("--tts-model", type=str, default=DEFAULT_TTS_PATH, help="Path to Piper TTS model")
+    parser.add_argument("--tts-model", type=str, default=DEFAULT_TTS_MODEL_PATH, help="Path to Piper TTS model")
     parser.add_argument("--hotword-model", type=str, default=DEFAULT_HOTWORD_PATH, help="Path to Porcupine .ppn")
     parser.add_argument("--vad-mode", type=str, default="1", help="webrtcvad mode (0-3)")
     parser.add_argument("--synonyms", type=str, default=DEFAULT_SYNONYMS_JSON, help="Path to synonyms JSON")
@@ -281,8 +287,7 @@ class WakeWordDetector:
 # ------------------------------------------------------------------------------------
 def record_until_silence(vad, audio_device_index=None):
     pa = pyaudio.PyAudio()
-    sdk = AUDIO_SAMPLE_RATE
-    frame_bytes = int(AUDIO_SAMPLE_RATE * (VAD_FRAME_DURATION / 1000)) 
+    frame_bytes = int(AUDIO_SAMPLE_RATE * (VAD_FRAME_DURATION / 1000))
     stream = pa.open(format=pyaudio.paInt16, channels=1, rate=AUDIO_SAMPLE_RATE,
                      input=True, frames_per_buffer=frame_bytes,
                      input_device_index=audio_device_index)
@@ -328,11 +333,12 @@ def generate_with_llm(llm_model_path, prompt):
     return res["choices"][0]["text"].strip()
 
 # ------------------------------------------------------------------------------------
-# TTS synthesis via Piper
+# TTS synthesis via PiperVoice
 # ------------------------------------------------------------------------------------
 def synthesize_tts(tts_model_path, text):
-    tts = PiperTTS(model_path=tts_model_path)
-    audio = tts.synthesize(text)
+    voice = PiperVoice.load(tts_model_path)
+    # Default speaker index 0; adjust if needed
+    audio = voice.synthesize(text, speaker_id=0)
     return audio
 
 # ------------------------------------------------------------------------------------
@@ -389,7 +395,7 @@ def main():
                 continue
 
             logging.info(f"Heard: '{user_text}'")
-            if re.search(r"\b(update code|self update)\b", user_text, re.IGNORECASE):
+            if re.search(r"\\b(update code|self update)\\b", user_text, re.IGNORECASE):
                 handle_self_update(); continue
             if re.search(r"connect wifi", user_text, re.IGNORECASE):
                 handle_wifi_connect(user_text.lower()); continue
@@ -417,7 +423,7 @@ def main():
                 logging.error(f"TTS error: {e}"); continue
 
             try:
-                play_audio(audio_out, samplerate=AUDIO_SAMPLE_RATE, output_device_index=args.audio_output)
+                play_audio(audio_out, sample_rate=AUDIO_SAMPLE_RATE, device=args.audio_output)
             except Exception as e:
                 logging.error(f"Playback error: {e}"); continue
 
