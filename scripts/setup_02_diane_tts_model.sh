@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# setup_diane_tts_model.sh
+# setup_02_diane_tts_model.sh
 #
 # Downloads Piper TTS model (en_US-amy-medium.onnx) and its metadata JSON
 # into /mnt/ssd/models/tts so that Diane can load it at runtime.
@@ -8,7 +8,7 @@
 #
 # Usage (on Diane, after git pull):
 #   cd /home/diane/diane/scripts
-#   sudo ./setup_diane_tts_model.sh
+#   sudo ./setup_02_diane_tts_model.sh
 
 set -euo pipefail
 
@@ -22,7 +22,7 @@ META_FILE="en_US-amy-medium.onnx.json"
 # Base URL on Hugging Face for this voice:
 BASE_URL="https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/amy/medium"
 
-# Full URLs for model + metadata (as published by Hugging Face) :contentReference[oaicite:0]{index=0}
+# Full URLs for model + metadata
 URL_MODEL="${BASE_URL}/${MODEL_FILE}"
 URL_META="${BASE_URL}/${META_FILE}"
 

@@ -1,27 +1,19 @@
 #!/usr/bin/env bash
 #
-# setup_diane_service.sh
+# setup_03_diane_service.sh
 #
 # Finds all *.service files in the Diane repository, installs them into /etc/systemd/system/,
 # reloads systemd, and enables+starts (or restarts) each service. Idempotent—safe to run repeatedly.
 #
 # Usage (on Diane, after git pull):
 #   cd /home/diane/diane/scripts
-#   sudo ./setup_diane_service.sh
-#
-# - Assumes your repo’s service files live somewhere under /home/diane/diane (e.g. in root or a 'services/' folder).
-# - Any existing copies in /etc/systemd/system/ will be overwritten with the version in the repo.
-# - After installing, each service will be enabled and (re)started so the latest unit file is in effect.
+#   sudo ./setup_03_diane_service.sh
 
 set -euo pipefail
 
 ### 1. Determine paths
-# Directory where this script lives:
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# Assume the repo root is one level above 'scripts/':
 REPO_ROOT="$(dirname "$SCRIPT_DIR")"
-
-# Destination for systemd unit files:
 SYSTEMD_DIR="/etc/systemd/system"
 
 echo
@@ -42,7 +34,6 @@ for SERVICE_PATH in "${SERVICE_FILES[@]}"; do
   DEST_PATH="${SYSTEMD_DIR}/${SERVICE_NAME}"
 
   echo "  • Installing ${SERVICE_NAME} → ${DEST_PATH}"
-  # Copy (overwrite if exists)
   cp "$SERVICE_PATH" "$DEST_PATH"
   chmod 644 "$DEST_PATH"
   chown root:root "$DEST_PATH"

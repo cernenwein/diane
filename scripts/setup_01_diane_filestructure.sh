@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 #
-# setup_diane_filestructure.sh
+# setup_01_diane_filestructure.sh
 #
 # Creates (or verifies) the directory layout under /mnt/ssd for Diane,
 # sets ownership to the invoking user (or 'pi' if run via sudo),
 # and applies sensible permissions.  Idempotent—safe to run repeatedly.
 #
-# Usage (on Diane, after pulling latest from GitHub):
+# Usage (on Diane, after git pull):
 #   cd /home/diane/diane/scripts
-#   sudo ./setup_diane_filestructure.sh
+#   sudo ./setup_01_diane_filestructure.sh
 
 set -euo pipefail
 
