@@ -194,3 +194,35 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+
+# Ignore Python virtual environment
+.venv/
+
+# Bytecode cache
+__pycache__/
+
+# Logs (if created)
+logs/
+
+# Voice cache & temp (all on SSD)
+# Whispers
+/mnt/ssd/whisper_cache/
+/mnt/ssd/tmp/
+
+# Models (keep large binaries off GitHub)
+/mnt/ssd/models/
+/home/diane/diane/models/
+
+# Swapfile
+/mnt/ssd/swapfile
+
+# Local configuration & credentials
+/*.env
+approved_networks.txt
+bluetooth_trusted_devices.txt
+vpn_credentials.txt
+credentials.json
+
+# Editor / IDE
+.vscode/
+.idea/
