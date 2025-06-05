@@ -1,0 +1,3 @@
+HomeNetwork,MyHomePass123
+OfficeWiFi,OfficePass!
+MobileHotspot,12345678
