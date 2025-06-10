@@ -6,16 +6,17 @@ After=network.target bluetooth.service
 Type=simple
 User=diane
 WorkingDirectory=/home/diane/diane
-ExecStart=/home/diane/diane/voice_llama_chat.py \
+ExecStart=/home/diane/diane/.venv/bin/python3 /home/diane/diane/voice_llama_chat.py \
+  --precision-model "/mnt/ssd/models/hotword/precise_diane.pb" \
   --llm-model "/mnt/ssd/models/L3.2-Rogue-Creative-Instruct-7B-D_AU-Q4_k_m.gguf" \
   --tts-model "/mnt/ssd/models/tts/en_US-amy-medium.onnx" \
-  --precision-model "/mnt/ssd/models/hotword/precise_diane.pb" \
-  --vad-mode "1" \
+  --vad-mode 1 \
   --synonyms "/mnt/ssd/voice_config/synonyms.json" \
   --audio-input 1 \
   --audio-output 0 \
   --web-key "my_secret_key" \
-  --log-level "INFO"
+  --log-level INFO
+Environment=PATH=/home/diane/diane/.venv/bin:/usr/bin:/bin
 Restart=on-failure
 RestartSec=5
 

@@ -2,12 +2,12 @@
 #
 # setup_05_diane_environment.sh
 # One-shot script to bring Diane Pi environment to a runnable state,
-# installing precise-runner (which includes the engine) rather than mycroft-precise.
+# using precise-runner only for wake-word detection (no mycroft-precise clone).
 #
 # - Creates and activates Python virtualenv
-# - Installs required Python packages
+# - Installs required Python packages including precise-runner
 # - Deploys voice_config templates into /mnt/ssd/voice_config
-# - Copies prebuilt Precise hotword model (hey computer)
+# - Copies prebuilt Precise hotword model (hey-computer.pb) to SSD
 # - Enables and starts the Diane systemd service
 #
 
@@ -36,6 +36,7 @@ echo -e "\n=== 3. Deploy voice_config from repo root to SSD ==="
 /home/diane/diane/scripts/deploy_voice_config.sh
 
 echo -e "\n=== 4. Deploy Precise hotword model ==="
+# Uses pre-downloaded hey-computer.pb from megamindca/mycroft-precise folder
 HOTWORD_SRC="/home/diane/diane/mycroft-precise/hey-computer.pb"
 HOTWORD_DST="/mnt/ssd/models/hotword/precise_diane.pb"
 if [ -f "$HOTWORD_SRC" ]; then
@@ -52,7 +53,7 @@ fi
 echo -e "\n=== 5. Enable & start Diane service ==="
 sudo systemctl daemon-reload
 sudo systemctl enable voice_llama_chat.service
-sudo systemctl start voice_llama_chat.service
+sudo systemctl restart voice_llama_chat.service
 
 echo -e "\n=== 6. Check service status ==="
 sudo systemctl status voice_llama_chat.service --no-pager
