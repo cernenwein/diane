@@ -1,4 +1,5 @@
 .hf_token
+mycroft-precise-code
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
