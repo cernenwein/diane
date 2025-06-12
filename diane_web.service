@@ -7,9 +7,10 @@ Wants=network-online.target
 Type=simple
 User=diane
 WorkingDirectory=/home/diane/diane
+# Explicitly call the venv python on your web script:
+ExecStart=/home/diane/diane/.venv/bin/python3 /home/diane/diane/diane_web.py
+# Ensure PATH is correct so any imports work
 Environment=PATH=/home/diane/diane/.venv/bin:/usr/bin:/bin
-Environment=WEB_PORT=8080
-ExecStart=/home/diane/diane/diane_web.py
 Restart=on-failure
 RestartSec=5
 
