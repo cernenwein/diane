@@ -7,7 +7,7 @@ Wants=network-online.target
 Type=simple
 User=diane
 WorkingDirectory=/home/diane/diane
-ExecStart=/home/diane/diane/.venv/bin/python3 /home/diane/diane/diane_web.py
+ExecStart=/home/diane/diane/diane_web.py
 Environment=PATH=/home/diane/diane/.venv/bin:/usr/bin:/bin
 Restart=on-failure
 RestartSec=5
