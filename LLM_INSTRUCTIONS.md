@@ -182,6 +182,9 @@ Ensure network-online.target is used where necessary
 Keep these hardware and OS details in mind when troubleshooting, adding drivers, or changing low‑level system settings.
 
 
+The database of record will be github in https://github.com/cernenwein/diane
+Diane is the name of the Pi, and files will be clones from github into /home/diane/diane as a way of transfering files to diane
+
 
 
 
