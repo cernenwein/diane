@@ -1,0 +1,25 @@
+[Unit]
+Description=Diane Web Interface
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=diane
+WorkingDirectory=/home/diane/diane
+ExecStart=/home/diane/diane/.venv/bin/python3 /home/diane/diane/voice_llama_chat.py \
+  --precision-model "" \
+  --llm-model "/mnt/ssd/models/L3.2-Rogue-Creative-Instruct-7B-D_AU-Q4_k_m.gguf" \
+  --tts-model "/mnt/ssd/models/tts/en_US-amy-medium.onnx" \
+  --vad-mode 0 \
+  --synonyms "/mnt/ssd/voice_config/synonyms.json" \
+  --audio-input -1 \
+  --audio-output -1 \
+  --web-key "my_secret_key" \
+  --log-level INFO
+Environment=PATH=/home/diane/diane/.venv/bin:/usr/bin:/bin
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
