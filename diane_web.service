@@ -7,12 +7,8 @@ Wants=network-online.target
 Type=simple
 User=diane
 WorkingDirectory=/home/diane/diane
+EnvironmentFile=/home/diane/diane/.env
 Environment=PATH=/home/diane/diane/.venv/bin:/usr/bin:/bin
-Environment=WEB_PORT=8080
-Environment=LLM_MODEL_PATH=/mnt/ssd/models/L3.2-Rogue-Creative-Instruct-7B-D_AU-Q4_k_m.gguf
-Environment=TTS_MODEL_PATH=/mnt/ssd/models/tts/en_US-amy-medium.onnx
-Environment=SYNONYMS_PATH=/mnt/ssd/voice_config/synonyms.json
-Environment=WEB_API_KEY=my_secret_key
 ExecStart=/home/diane/diane/.venv/bin/python3 /home/diane/diane/diane_web.py
 Restart=on-failure
 RestartSec=5
