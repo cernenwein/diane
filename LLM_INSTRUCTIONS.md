@@ -139,6 +139,48 @@ Ensure those files are filled in at the repo root before deployment.
 
 By following this document, any new ChatGPT/LLM instance launched for Diane will have consistent access to the correct models, configurations, and runtime settings without manual path edits.
 
+7. Hardware, OS, and System Configuration
+
+Diane runs on a Raspberry Pi 4–class system with the following baseline configuration:
+
+Operating System: Debian GNU/Linux 12 (Bookworm) aarch64, Kernel 6.12.25+rpt-rpi-2712
+
+Storage:
+
+Root filesystem: microSD (/dev/mmcblk0p2)
+
+High–speed NVMe SSD: mounted at /mnt/ssd, used for models, swap, caches, and logs
+
+Memory & Swap:
+
+8 GiB RAM; 8 GiB SSD swap file at /mnt/ssd/swapfile; zram 256 MiB partition; /var/swap 512 MiB
+
+Audio:
+
+ALSA configured via /etc/asound.conf; default .service units run without a display or DBus session
+
+Networking:
+
+Wi‑Fi credentials from /mnt/ssd/voice_config/approved_networks.txt
+
+Bluetooth trusted devices in /mnt/ssd/voice_config/bluetooth_trusted_devices.txt
+
+ExpressVPN (if enabled) via your custom VPN service unit
+
+User & Permissions:
+
+All services run under the diane user
+
+Key directories (models, configs, scripts) owned by diane:diane with strict permissions (600 or 644)
+
+System Services:
+
+Use systemd units for voice, web, Bluetooth reconnect, and health checks
+
+Ensure network-online.target is used where necessary
+
+Keep these hardware and OS details in mind when troubleshooting, adding drivers, or changing low‑level system settings.
+
 
 
 
