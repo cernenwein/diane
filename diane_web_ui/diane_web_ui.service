@@ -9,7 +9,7 @@ User=diane
 WorkingDirectory=/home/diane/diane
 EnvironmentFile=/home/diane/diane/.env
 Environment=PATH=/home/diane/diane/.venv/bin:/usr/bin:/bin
-ExecStart=/home/diane/diane/.venv/bin/python3 /home/diane/diane/diane_web_ui.py
+ExecStart=/home/diane/diane/.venv/bin/python3 /home/diane/diane/diane_web_ui/diane_web_ui.py
 Restart=on-failure
 RestartSec=5
 
