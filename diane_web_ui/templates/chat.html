@@ -37,6 +37,14 @@ function appendMessage(sender, text) {
     messages.scrollTop = messages.scrollHeight;
 }
 
+async function loadHistory() {
+    const res = await fetch("/history");
+    const data = await res.json();
+    for (const { sender, text } of data.history) {
+        appendMessage(sender, text);
+    }
+}
+
 send.onclick = async () => {
     const msg = input.value.trim();
     if (!msg) return;
@@ -54,6 +62,8 @@ send.onclick = async () => {
 input.addEventListener("keydown", e => {
     if (e.key === "Enter") send.click();
 });
+
+loadHistory();
 </script>
 </body>
 </html>
