@@ -7,6 +7,36 @@ VENV_PATH="/home/diane/diane/.venv/bin/python3"
 SCRIPT_PATH="/home/diane/diane/scripts/launch_voice_and_web.py"
 ENV_FILE="/home/diane/diane/.env"
 
+# Safety check for existing services
+echo "[0/4] Checking for conflicting services..."
+
+conflicts=0
+
+if systemctl is-enabled --quiet voice_llama_chat.service; then
+    echo "❌ voice_llama_chat.service is ENABLED. Please disable it before continuing:"
+    echo "   sudo systemctl disable --now voice_llama_chat.service"
+    conflicts=1
+elif systemctl is-active --quiet voice_llama_chat.service; then
+    echo "❌ voice_llama_chat.service is RUNNING. Please stop it before continuing:"
+    echo "   sudo systemctl stop voice_llama_chat.service"
+    conflicts=1
+fi
+
+if systemctl is-enabled --quiet diane_web.service; then
+    echo "❌ diane_web.service is ENABLED. Please disable it before continuing:"
+    echo "   sudo systemctl disable --now diane_web.service"
+    conflicts=1
+elif systemctl is-active --quiet diane_web.service; then
+    echo "❌ diane_web.service is RUNNING. Please stop it before continuing:"
+    echo "   sudo systemctl stop diane_web.service"
+    conflicts=1
+fi
+
+if [ "$conflicts" -eq 1 ]; then
+    echo "⚠️ Resolve service conflicts before installing the unified service."
+    exit 1
+fi
+
 echo "[1/4] Creating launch script..."
 
 cat << 'EOF' > "$SCRIPT_PATH"
