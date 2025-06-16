@@ -1,20 +1,59 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Diane Chat</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <script src="{{ url_for('static', filename='chat.js') }}"></script>
+    <meta charset="UTF-8">
+    <title>Diane Chat Interface</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f4f4; margin: 0; padding: 0; }
+        #chat-container { max-width: 800px; margin: 20px auto; background: #fff; padding: 20px; border-radius: 8px; }
+        #messages { height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; background: #fafafa; }
+        .msg { margin-bottom: 10px; }
+        .user { color: blue; }
+        .ai { color: green; }
+        #input-box { display: flex; margin-top: 10px; }
+        #input { flex: 1; padding: 10px; font-size: 1rem; }
+        #send { padding: 10px 20px; font-size: 1rem; }
+    </style>
 </head>
 <body>
-  <div class="chat-container">
-    <h2>Diane Chat</h2>
-    <div id="chatbox"></div>
-    <form id="chat-form">
-      <input type="text" id="message" placeholder="Type a message..." autocomplete="off" required>
-      <button type="submit">Send</button>
-    </form>
-    <a href="{{ url_for('logout') }}">Logout</a>
-  </div>
+    <div id="chat-container">
+        <h1>Diane Chat</h1>
+        <div id="messages"></div>
+        <div id="input-box">
+            <input type="text" id="input" placeholder="Type your message..." />
+            <button id="send">Send</button>
+        </div>
+    </div>
+<script>
+const input = document.getElementById("input");
+const send = document.getElementById("send");
+const messages = document.getElementById("messages");
+
+function appendMessage(sender, text) {
+    const div = document.createElement("div");
+    div.className = "msg";
+    div.innerHTML = `<strong class="\${sender}">\${sender}:</strong> \${text}`;
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+}
+
+send.onclick = async () => {
+    const msg = input.value.trim();
+    if (!msg) return;
+    appendMessage("user", msg);
+    input.value = "";
+    const res = await fetch("/query", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: msg })
+    });
+    const data = await res.json();
+    appendMessage("ai", data.response || "[no response]");
+};
+
+input.addEventListener("keydown", e => {
+    if (e.key === "Enter") send.click();
+});
+</script>
 </body>
 </html>
