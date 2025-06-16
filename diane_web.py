@@ -1,49 +1,42 @@
 #!/home/diane/diane/.venv/bin/python3
-"""diane_web.py
-
-Launch only the web interface of Diane's voice_llama_chat app,
-loading configuration from .env.
-"""
+from flask import Flask, request, jsonify, render_template, redirect
 import os
 from dotenv import load_dotenv
-import logging
 
-# Load .env from repo root
-base_dir = os.path.dirname(os.path.abspath(__file__))
-env_path = os.path.join(base_dir, '.env')
-load_dotenv(env_path)
+load_dotenv("/home/diane/diane/.env")
 
-# Import the Flask app and utility
-from voice_llama_chat import app, verify_file
+app = Flask(__name__, template_folder="templates")
 
-def configure_app():
-    # Read environment variables
-    llm_model = os.getenv('LLM_MODEL_PATH')
-    tts_model = os.getenv('TTS_MODEL_PATH')
-    synonyms = os.getenv('SYNONYMS_PATH')
-    web_key = os.getenv('WEB_API_KEY')
+chat_history = []
 
-    # Validate
-    verify_file(llm_model, 'LLM model')
-    verify_file(tts_model, 'TTS model')
-    verify_file(synonyms, 'Synonyms JSON')
-    if not web_key:
-        logging.error('WEB_API_KEY not set in .env')
-        raise RuntimeError('WEB_API_KEY not set')
+@app.route("/")
+def root():
+    return redirect("/chat")
 
-    # Configure Flask app
-    app.config['llm_model'] = llm_model
-    app.config['tts_model'] = tts_model
-    app.config['synonyms'] = synonyms
+@app.route("/chat")
+def chat():
+    return render_template("chat.html")
 
-    # Patch the module's API key
-    import voice_llama_chat
-    voice_llama_chat.WEB_API_KEY = web_key
+@app.route("/query", methods=["POST"])
+def query():
+    data = request.get_json()
+    user_input = data.get("query", "")
+    chat_history.append({"sender": "user", "text": user_input})
 
-if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s')
-    configure_app()
-    port = int(os.getenv('WEB_PORT', '8080'))
-    host = '0.0.0.0'
-    logging.info(f'Starting Diane web interface on {host}:{port}')
-    app.run(host=host, port=port)
+    # Placeholder response logic — replace with actual LLM call
+    response_text = "This is a mock response to: " + user_input
+
+    chat_history.append({"sender": "ai", "text": response_text})
+    return jsonify({"response": response_text})
+
+@app.route("/history")
+def history():
+    return jsonify({"history": chat_history[-200:]})
+
+@app.route("/health")
+def health():
+    return jsonify({"status": "ok"}), 200
+
+if __name__ == "__main__":
+    port = int(os.getenv("WEB_PORT", 8080))
+    app.run(host="0.0.0.0", port=port)
