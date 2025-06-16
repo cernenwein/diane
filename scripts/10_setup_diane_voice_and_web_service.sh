@@ -37,7 +37,14 @@ if [ "$conflicts" -eq 1 ]; then
     exit 1
 fi
 
-echo "[1/4] Creating launch script..."
+echo "[1/4] Patching .env with WEB_PORT=8081..."
+if grep -q '^WEB_PORT=' "$ENV_FILE"; then
+    sed -i 's/^WEB_PORT=.*/WEB_PORT=8081/' "$ENV_FILE"
+else
+    echo 'WEB_PORT=8081' >> "$ENV_FILE"
+fi
+
+echo "[2/4] Creating launch script..."
 
 cat << 'EOF' > "$SCRIPT_PATH"
 #!/usr/bin/env bash
@@ -58,7 +65,7 @@ EOF
 
 chmod +x "$SCRIPT_PATH"
 
-echo "[2/4] Creating systemd service..."
+echo "[3/4] Creating systemd service..."
 
 cat << EOF | sudo tee "$SERVICE_FILE" > /dev/null
 [Unit]
@@ -78,11 +85,11 @@ WorkingDirectory=/home/diane/diane
 WantedBy=multi-user.target
 EOF
 
-echo "[3/4] Reloading systemd..."
+echo "[4/4] Reloading systemd..."
 sudo systemctl daemon-reexec
 sudo systemctl daemon-reload
 
-echo "[4/4] Enabling and starting service..."
-sudo systemctl enable --now $SERVICE_NAME
+echo "✅ Restarting $SERVICE_NAME with WEB_PORT=8081..."
+sudo systemctl restart $SERVICE_NAME
 
-echo "✅ Combined service $SERVICE_NAME is running."
+echo "🌐 You can now visit: http://diane.local:8081/"
